@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from "three/examples/jsm/libs/stats.module";
 
 const scene = new THREE.Scene();
 
@@ -16,7 +17,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.addEventListener("change", render);
+// controls.addEventListener("change", render); 애니메이션 루프 미사용시 활성화
 
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshBasicMaterial({
@@ -32,21 +33,25 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  // render();
+  // render(); 애니메이션 루프 미사용시 활성화
 }
 
-// function animate() {
-//   requestAnimationFrame(animate);
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
-//   cube.rotation.x += 0.01;
-//   cube.rotation.y += 0.01;
+function animate() {
+  requestAnimationFrame(animate);
 
-//   render();
-// }
+  // cube.rotation.x += 0.01;
+  // cube.rotation.y += 0.01;
+
+  render();
+  stats.update();
+}
 
 function render() {
   renderer.render(scene, camera);
 }
 
-// animate();
-render();
+animate();
+// render(); 애니메이션 루프 미사용시 활성화
