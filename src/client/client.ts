@@ -6,8 +6,11 @@ import { GUI } from 'lil-gui'
 const scene = new THREE.Scene()
 scene.add(new THREE.AxesHelper(5))
 
-const light = new THREE.AmbientLight()
+const light = new THREE.DirectionalLight()
 scene.add(light)
+
+const helper = new THREE.DirectionalLightHelper(light)
+scene.add(helper)
 
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -23,18 +26,18 @@ document.body.appendChild(renderer.domElement)
 
 new OrbitControls(camera, renderer.domElement)
 
-const planeGeometry = new THREE.PlaneGeometry(20, 10)//, 360, 180)
-const plane = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial())
-plane.rotateX(-Math.PI / 2)
-//plane.position.y = -1.75
-scene.add(plane)
+// const planeGeometry = new THREE.PlaneGeometry(20, 10)//, 360, 180)
+// const plane = new THREE.Mesh(planeGeometry, new THREE.MeshPhongMaterial())
+// plane.rotateX(-Math.PI / 2)
+// //plane.position.y = -1.75
+// scene.add(plane)
 
 const torusGeometry = [
     new THREE.TorusGeometry(),
     new THREE.TorusGeometry(),
     new THREE.TorusGeometry(),
     new THREE.TorusGeometry(),
-    new THREE.TorusGeometry()
+    new THREE.TorusGeometry(),
 ]
 
 const material = [
@@ -42,7 +45,7 @@ const material = [
     new THREE.MeshLambertMaterial(),
     new THREE.MeshPhongMaterial(),
     new THREE.MeshPhysicalMaterial({}),
-    new THREE.MeshToonMaterial()
+    new THREE.MeshToonMaterial(),
 ]
 
 const torus = [
@@ -50,7 +53,7 @@ const torus = [
     new THREE.Mesh(torusGeometry[1], material[1]),
     new THREE.Mesh(torusGeometry[2], material[2]),
     new THREE.Mesh(torusGeometry[3], material[3]),
-    new THREE.Mesh(torusGeometry[4], material[4])
+    new THREE.Mesh(torusGeometry[4], material[4]),
 ]
 
 const texture = new THREE.TextureLoader().load('img/grid.png')
@@ -59,6 +62,10 @@ material[1].map = texture
 material[2].map = texture
 material[3].map = texture
 material[4].map = texture
+
+// light.target = torus[0];
+light.target.position.set(0, 10, 0)
+scene.add(light.target)
 
 torus[0].position.x = -8
 torus[1].position.x = -4
@@ -85,7 +92,7 @@ document.body.appendChild(stats.dom)
 
 const data = {
     color: light.color.getHex(),
-    mapsEnabled: true
+    mapsEnabled: true,
 }
 
 const gui = new GUI()
@@ -95,8 +102,11 @@ lightFolder.addColor(data, 'color').onChange(() => {
 })
 lightFolder.add(light, 'intensity', 0, 1, 0.01)
 
-const ambientLightFolder = gui.addFolder('THREE.AmbientLight')
-ambientLightFolder.open()
+const directionalLightFolder = gui.addFolder('THREE.DirectionalLight')
+directionalLightFolder.add(light.position, "x", -100, 100, 0.01)
+directionalLightFolder.add(light.position, "y", -100, 100, 0.01)
+directionalLightFolder.add(light.position, "z", -100, 100, 0.01)
+directionalLightFolder.open()
 
 const meshesFolder = gui.addFolder('Meshes')
 meshesFolder.add(data, 'mapsEnabled').onChange(() => {
@@ -112,6 +122,8 @@ meshesFolder.add(data, 'mapsEnabled').onChange(() => {
 
 function animate() {
     requestAnimationFrame(animate)
+
+    helper.update()
 
     torus.forEach((t) => {
         t.rotation.y += 0.01
