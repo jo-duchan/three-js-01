@@ -43,12 +43,12 @@ cubes[2].position.x = 2
 cubes.forEach((c) => scene.add(c))
 
 const controls = new DragControls(cubes, camera, renderer.domElement)
-// controls.addEventListener('dragstart', function (event) {
-//     event.object.material.opacity = 0.33
-// })
-// controls.addEventListener('dragend', function (event) {
-//     event.object.material.opacity = 1
-// })
+controls.addEventListener('dragstart', function (event) {
+    event.object.material.opacity = 0.33
+})
+controls.addEventListener('dragend', function (event) {
+    event.object.material.opacity = 1
+})
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
